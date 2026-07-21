@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from database import get_db_connection
 from config import JWT_SECRET_KEY
+from utils.auth_middleware import token_required
 import bcrypt
 import jwt
 import datetime
@@ -164,4 +165,24 @@ def login():
         "success": True,
         "message": "Login Successful",
         "token": token
+    }), 200
+
+
+# ==========================
+# Protected Profile API
+# ==========================
+@auth.route("/profile", methods=["GET"])
+@token_required
+def profile():
+
+    user = request.user
+
+    return jsonify({
+        "success": True,
+        "message": f"Welcome {user['username']}",
+        "user": {
+            "user_id": user["user_id"],
+            "username": user["username"],
+            "email": user["email"]
+        }
     }), 200
