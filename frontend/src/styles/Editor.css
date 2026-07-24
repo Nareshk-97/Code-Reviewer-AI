@@ -1,0 +1,43 @@
+.editor-panel{
+
+    background:#1b1f2b;
+
+    border-radius:15px;
+
+    min-height:650px;
+
+    border:1px solid #2b3145;
+
+    overflow:hidden;
+}
+
+.panel-header{
+
+    padding:18px 25px;
+
+    border-bottom:1px solid #2b3145;
+
+    background:#202637;
+}
+
+.panel-header h3{
+
+    color:white;
+
+    font-size:20px;
+}
+
+.editor-placeholder{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    height:560px;
+
+    color:#8b93a7;
+
+    font-size:20px;
+}

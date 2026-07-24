@@ -124,3 +124,244 @@ body{
 .logout-btn:hover{
     background:#1d4ed8;
 }
+
+
+/* =========================================
+   AI REVIEW CARD
+========================================= */
+
+.review-card{
+    margin-top:40px;
+    background:#ffffff;
+    border-radius:22px;
+    padding:35px;
+    border:1px solid #edf2f7;
+    box-shadow:
+        0 15px 40px rgba(15,23,42,.06),
+        0 4px 12px rgba(15,23,42,.04);
+}
+
+/* =========================================
+   TEXTAREA
+========================================= */
+
+.review-card textarea{
+
+    width:100%;
+    min-height:300px;
+
+    margin-top:20px;
+
+    padding:22px;
+
+    border-radius:18px;
+
+    border:1px solid #dbe3ec;
+
+    background:#fbfcfd;
+
+    color:#1e293b;
+
+    font-size:15px;
+
+    font-family:Consolas, monospace;
+
+    resize:vertical;
+
+    outline:none;
+
+    transition:.35s;
+
+}
+
+.review-card textarea:focus{
+
+    background:white;
+
+    border-color:#2563eb;
+
+    box-shadow:
+    0 0 0 5px rgba(37,99,235,.08);
+
+}
+
+/* Placeholder */
+
+.review-card textarea::placeholder{
+
+    color:#94a3b8;
+
+}
+
+/* =========================================
+   BUTTON
+========================================= */
+
+.review-btn{
+
+    width:100%;
+
+    margin-top:25px;
+
+    height:55px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#111827;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.review-btn:hover{
+
+    background:#2563eb;
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 15px 30px rgba(37,99,235,.28);
+
+}
+
+.review-btn:active{
+
+    transform:scale(.98);
+
+}
+
+.review-btn:disabled{
+
+    background:#cbd5e1;
+
+    cursor:not-allowed;
+
+}
+
+/* =========================================
+   AI RESPONSE
+========================================= */
+
+.review-output{
+
+    margin-top:35px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:white;
+
+    border:1px solid #e2e8f0;
+
+    box-shadow:
+
+    0 15px 35px rgba(0,0,0,.06);
+
+}
+
+/* Header */
+
+.review-output h3{
+
+    margin:0;
+
+    padding:18px 25px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    color:white;
+
+    background:#111827;
+
+    letter-spacing:.5px;
+
+}
+
+/* Code Area */
+
+.review-output pre{
+
+    margin:0;
+
+    padding:28px;
+
+    background:#f8fafc;
+
+    color:#334155;
+
+    font-size:15px;
+
+    line-height:1.9;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    font-family:Consolas, monospace;
+
+    overflow:auto;
+
+}
+
+/* Nice Scrollbar */
+
+.review-output pre::-webkit-scrollbar{
+
+    width:9px;
+
+}
+
+.review-output pre::-webkit-scrollbar-thumb{
+
+    background:#cbd5e1;
+
+    border-radius:30px;
+
+}
+
+.review-output pre::-webkit-scrollbar-thumb:hover{
+
+    background:#64748b;
+
+}
+
+/* Fade Animation */
+
+.review-output{
+
+    animation:fadeUp .4s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(15px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}

@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { reviewCode } from "../services/reviewService";
+import "../styles/Dashboard.css";
 
 function Dashboard() {
 
     const [user, setUser] = useState(null);
+
+    const [code, setCode] = useState("");
+    const [review, setReview] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -37,7 +43,6 @@ function Dashboard() {
                 console.log(error);
 
                 localStorage.removeItem("token");
-
                 navigate("/login");
 
             }
@@ -48,67 +53,167 @@ function Dashboard() {
 
     }, [navigate]);
 
+    // ==========================
+    // AI Review Function
+    // ==========================
+
+    const handleReview = async () => {
+
+        if (!code.trim()) {
+            alert("Please enter some code.");
+            return;
+        }
+
+        try {
+
+            setLoading(true);
+
+            const response = await reviewCode(code);
+
+            if (response.success) {
+                setReview(response.review);
+            } else {
+                alert(response.message);
+            }
+
+        } catch (error) {
+
+            console.log(error);
+            alert("Unable to review code.");
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+    // ==========================
+    // Logout
+    // ==========================
+
     const handleLogout = () => {
 
         localStorage.removeItem("token");
-
         navigate("/login");
 
     };
 
     return (
 
-        <div className="dashboard-container">
+        <div className="dashboard">
 
-            <div className="dashboard-card">
+            {/* Welcome Section */}
 
-                <div className="dashboard-header">
+            <div className="welcome-section">
 
-                    <h1>AI Code Reviewer</h1>
+                <h1>
+                    Welcome Back{user ? `, ${user.username}` : ""} 👋
+                </h1>
 
-                    <button
-                        className="logout-btn"
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </button>
+                <p>AI-Powered Code Analysis Platform</p>
+
+            </div>
+
+            {/* Workspace */}
+
+            <div className="workspace">
+
+                {/* Left Panel */}
+
+                <div className="left-panel">
+
+                    <h2>💻 Code Playground</h2>
+
+                    <textarea
+                        rows="18"
+                        placeholder="Paste your code here..."
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        style={{
+                            width: "100%",
+                            height: "450px",
+                            background: "#111827",
+                            color: "#ffffff",
+                            border: "1px solid #374151",
+                            borderRadius: "10px",
+                            padding: "15px",
+                            fontSize: "15px",
+                            resize: "none",
+                            outline: "none"
+                        }}
+                    />
 
                 </div>
 
-                {
-                    user && (
+                {/* Right Panel */}
 
-                        <div className="profile-card">
+                <div className="right-panel">
 
-                            <h2>Welcome, {user.username} 👋</h2>
+                    <h2>🤖 AI Analysis</h2>
 
-                            <p><strong>Username:</strong> {user.username}</p>
+                    {
+                        review ? (
 
-                            <p><strong>Email:</strong> {user.email}</p>
+                            <pre
+                                style={{
+                                    whiteSpace: "pre-wrap",
+                                    color: "#e5e7eb",
+                                    lineHeight: "1.6"
+                                }}
+                            >
+                                {review}
+                            </pre>
 
-                        </div>
+                        ) : (
 
-                    )
-                }
+                            <p
+                                style={{
+                                    color: "#9ca3af"
+                                }}
+                            >
+                                Your AI review will appear here after clicking
+                                <strong> Review Code</strong>.
+                            </p>
 
-                <div className="review-card">
+                        )
+                    }
 
-                    <h2>AI Code Review</h2>
+                </div>
 
-                    <p>
-                        Paste your source code here and get AI-powered
-                        suggestions, bug detection, and optimization tips.
-                    </p>
+            </div>
 
-                    <textarea
-                        rows="12"
-                        placeholder="Paste your code here..."
-                    ></textarea>
+            {/* Toolbar */}
 
-                    <button className="review-btn">
+            <div className="toolbar">
 
-                        Review Code
+                <div className="toolbar-left">
 
+                    <select>
+
+                        <option>Python</option>
+                        <option>Java</option>
+                        <option>JavaScript</option>
+                        <option>C++</option>
+
+                    </select>
+
+                </div>
+
+                <div className="toolbar-right">
+
+                    <button
+                        onClick={handleReview}
+                        disabled={loading}
+                    >
+                        {loading ? "Reviewing..." : "Review Code"}
+                    </button>
+
+                    <button
+                        onClick={handleLogout}
+                    >
+                        Logout
                     </button>
 
                 </div>

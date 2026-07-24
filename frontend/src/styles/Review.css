@@ -1,0 +1,27 @@
+.review-panel{
+
+    background:#1b1f2b;
+
+    border-radius:15px;
+
+    min-height:650px;
+
+    border:1px solid #2b3145;
+
+    overflow:hidden;
+}
+
+.review-placeholder{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    height:560px;
+
+    color:#8b93a7;
+
+    font-size:20px;
+}
