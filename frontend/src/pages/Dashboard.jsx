@@ -3,12 +3,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { reviewCode } from "../services/reviewService";
 import "../styles/Dashboard.css";
+import EditorPanel from "../components/EditorPanel";
+import Navbar from "../components/Navbar";
 
 function Dashboard() {
 
     const [user, setUser] = useState(null);
-
     const [code, setCode] = useState("");
+    const [language, setLanguage] = useState("python");
     const [review, setReview] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -102,52 +104,32 @@ function Dashboard() {
 
     return (
 
-        <div className="dashboard">
+    <div className="dashboard">
 
-            {/* Welcome Section */}
+        <Navbar />
 
-            <div className="welcome-section">
+        <div className="welcome-section">
 
-                <h1>
-                    Welcome Back{user ? `, ${user.username}` : ""} 👋
-                </h1>
+            <h1>
+                Welcome Back{user ? `, ${user.username}` : ""} 👋
+            </h1>
 
-                <p>AI-Powered Code Analysis Platform</p>
+            <p>AI-Powered Code Analysis Platform</p>
 
-            </div>
+        </div>
 
             {/* Workspace */}
 
             <div className="workspace">
 
-                {/* Left Panel */}
+                {/* Monaco Editor */}
 
-                <div className="left-panel">
-
-                    <h2>💻 Code Playground</h2>
-
-                    <textarea
-                        rows="18"
-                        placeholder="Paste your code here..."
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        style={{
-                            width: "100%",
-                            height: "450px",
-                            background: "#111827",
-                            color: "#ffffff",
-                            border: "1px solid #374151",
-                            borderRadius: "10px",
-                            padding: "15px",
-                            fontSize: "15px",
-                            resize: "none",
-                            outline: "none"
-                        }}
-                    />
-
-                </div>
-
-                {/* Right Panel */}
+                <EditorPanel
+                    code={code}
+                    setCode={setCode}
+                    language={language}
+                />
+                {/* AI Analysis */}
 
                 <div className="right-panel">
 
@@ -190,12 +172,15 @@ function Dashboard() {
 
                 <div className="toolbar-left">
 
-                    <select>
+                    <select
+    value={language}
+    onChange={(e) => setLanguage(e.target.value)}
+>
 
-                        <option>Python</option>
-                        <option>Java</option>
-                        <option>JavaScript</option>
-                        <option>C++</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="cpp">C++</option>
 
                     </select>
 

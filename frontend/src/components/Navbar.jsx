@@ -1,33 +1,27 @@
-import "../styles/Navbar.css";
+import "./../styles/Navbar.css";
 
-function Navbar({ onLogout }) {
-  return (
-    <header className="navbar">
+function Navbar() {
 
-      <div className="logo-container">
-        <div className="logo-icon">🤖</div>
+    return (
 
-        <div>
-          <h2>Code Reviewer AI</h2>
-          <p>Analyze • Improve • Optimize</p>
-        </div>
-      </div>
+        <nav className="navbar">
 
-      <div className="nav-right">
+            <div className="navbar-logo">
 
-        <div className="ai-status">
-          <span className="status-circle"></span>
-          AI Ready
-        </div>
+                🤖 <span>Code Reviewer AI</span>
 
-        <button className="logout-btn" onClick={onLogout}>
-          Logout
-        </button>
+            </div>
 
-      </div>
+            <div className="navbar-tagline">
 
-    </header>
-  );
+                Analyze • Improve • Optimize
+
+            </div>
+
+        </nav>
+
+    );
+
 }
 
 export default Navbar;

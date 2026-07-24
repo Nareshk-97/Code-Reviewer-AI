@@ -1,19 +1,34 @@
-import "../styles/Editor.css";
+import Editor from "@monaco-editor/react";
 
-function EditorPanel() {
-  return (
-    <section className="editor-panel">
+function EditorPanel({ code, setCode, language }) {
 
-      <div className="panel-header">
-        <h3>Code Playground</h3>
-      </div>
+    return (
 
-      <div className="editor-placeholder">
-        Monaco Editor will be added here.
-      </div>
+        <div className="left-panel">
 
-    </section>
-  );
+            <h2>💻 Code Playground</h2>
+
+            <Editor
+                height="500px"
+                language={language}
+                theme="vs-dark"
+                value={code}
+                onChange={(value) => setCode(value || "")}
+                options={{
+                    minimap: {
+                        enabled: false
+                    },
+                    fontSize: 15,
+                    automaticLayout: true,
+                    scrollBeyondLastLine: false,
+                    wordWrap: "on"
+                }}
+            />
+
+        </div>
+
+    );
+
 }
 
 export default EditorPanel;
