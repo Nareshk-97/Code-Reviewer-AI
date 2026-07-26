@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { reviewCode } from "../services/reviewService";
@@ -13,6 +13,8 @@ function Dashboard() {
     const [language, setLanguage] = useState("python");
     const [review, setReview] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const fileInputRef = useRef(null);
 
     const navigate = useNavigate();
 
@@ -97,10 +99,28 @@ function Dashboard() {
 
     const handleLogout = () => {
 
-        localStorage.removeItem("token");
-        navigate("/login");
+    localStorage.removeItem("token");
+    navigate("/login");
 
+};
+
+const handleUploadClick = () => {
+    fileInputRef.current.click();
+};
+
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+        setCode(e.target.result);
     };
+
+    reader.readAsText(file);
+};
 
     return (
 
@@ -166,6 +186,14 @@ function Dashboard() {
 
             </div>
 
+            <input
+    type="file"
+    ref={fileInputRef}
+    style={{ display: "none" }}
+    accept=".py,.java,.js,.cpp,.c,.txt"
+    onChange={handleFileUpload}
+/>
+
             {/* Toolbar */}
 
             <div className="toolbar">
@@ -188,20 +216,22 @@ function Dashboard() {
 
                 <div className="toolbar-right">
 
-                    <button
-                        onClick={handleReview}
-                        disabled={loading}
-                    >
-                        {loading ? "Reviewing..." : "Review Code"}
-                    </button>
+    <button onClick={handleUploadClick}>
+        Upload
+    </button>
 
-                    <button
-                        onClick={handleLogout}
-                    >
-                        Logout
-                    </button>
+    <button
+        onClick={handleReview}
+        disabled={loading}
+    >
+        {loading ? "Reviewing..." : "Review Code"}
+    </button>
 
-                </div>
+    <button onClick={handleLogout}>
+        Logout
+    </button>
+
+</div>
 
             </div>
 
