@@ -122,6 +122,33 @@ const handleFileUpload = (event) => {
     reader.readAsText(file);
 };
 
+// ==========================
+// Copy AI Review
+// ==========================
+
+const handleCopyReview = async () => {
+
+    if (!review.trim()) {
+        alert("No review available to copy.");
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(review);
+
+        alert("Review copied successfully!");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Failed to copy review.");
+
+    }
+
+};
+
     return (
 
     <div className="dashboard">
@@ -217,22 +244,25 @@ const handleFileUpload = (event) => {
                 <div className="toolbar-right">
 
     <button onClick={handleUploadClick}>
-        Upload
+        📁 Upload
+    </button>
+
+    <button onClick={handleCopyReview}>
+        📋 Copy Review
     </button>
 
     <button
         onClick={handleReview}
         disabled={loading}
     >
-        {loading ? "Reviewing..." : "Review Code"}
+        {loading ? "Reviewing..." : "🤖 Review Code"}
     </button>
 
     <button onClick={handleLogout}>
-        Logout
+        🚪 Logout
     </button>
 
 </div>
-
             </div>
 
         </div>
