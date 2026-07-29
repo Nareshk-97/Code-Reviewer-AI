@@ -5,6 +5,10 @@ import { reviewCode } from "../services/reviewService";
 import "../styles/Dashboard.css";
 import EditorPanel from "../components/EditorPanel";
 import Navbar from "../components/Navbar";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 function Dashboard() {
 
@@ -13,6 +17,10 @@ function Dashboard() {
     const [language, setLanguage] = useState("python");
     const [review, setReview] = useState("");
     const [loading, setLoading] = useState(false);
+    const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem("reviewHistory");
+    return saved ? JSON.parse(saved) : [];
+});
 
     const fileInputRef = useRef(null);
 
@@ -75,10 +83,30 @@ function Dashboard() {
             const response = await reviewCode(code);
 
             if (response.success) {
-                setReview(response.review);
-            } else {
-                alert(response.message);
-            }
+
+    setReview(response.review);
+
+    const newReview = {
+        id: Date.now(),
+        language,
+        review: response.review,
+        createdAt: new Date().toLocaleString()
+    };
+
+    const updatedHistory = [newReview, ...history].slice(0, 5);
+
+    setHistory(updatedHistory);
+
+    localStorage.setItem(
+        "reviewHistory",
+        JSON.stringify(updatedHistory)
+    );
+
+} else {
+
+    alert(response.message);
+
+}
 
         } catch (error) {
 
@@ -148,6 +176,46 @@ const handleCopyReview = async () => {
     }
 
 };
+const handleDownloadReview = () => {
+
+    if (!review.trim()) {
+        alert("No review available to download.");
+        return;
+    }
+
+    const blob = new Blob([review], { type: "text/plain" });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "AI_Review.txt";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+
+};
+const handleClearEditor = () => {
+
+    if (window.confirm("Are you sure you want to clear the editor?")) {
+        setCode("");
+    }
+
+};
+
+const handleClearReview = () => {
+
+    if (window.confirm("Are you sure you want to clear the AI review?")) {
+        setReview("");
+    }
+
+};
 
     return (
 
@@ -180,41 +248,94 @@ const handleCopyReview = async () => {
 
                 <div className="right-panel">
 
-                    <h2>🤖 AI Analysis</h2>
+                    
+                    <h2 className="analysis-title">
+    🤖 AI Analysis
+</h2>
+                   <div className="markdown-body">
+    {review ? (
+        <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+                code({ inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || "");
 
-                    {
-                        review ? (
+                    return !inline && match ? (
+                        <SyntaxHighlighter
+                            style={oneDark}
+                            language={match[1]}
+                            PreTag="div"
+                            {...props}
+                        >
+                            {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                    ) : (
+                        <code className={className} {...props}>
+                            {children}
+                        </code>
+                    );
+                },
+            }}
+        >
+            {review}
+        </ReactMarkdown>
+    ) : (
+        <div className="empty-review">
+            <h2>🤖 Ready to Review</h2>
 
-                            <pre
-                                style={{
-                                    whiteSpace: "pre-wrap",
-                                    color: "#e5e7eb",
-                                    lineHeight: "1.6"
-                                }}
-                            >
-                                {review}
-                            </pre>
+            <p>
+                Paste your code into the editor and click
+                <strong> Review Code</strong>.
+            </p>
 
-                        ) : (
+            <ul>
+                <li>✅ Bug Detection</li>
+                <li>✅ Performance Suggestions</li>
+                <li>✅ Code Quality Analysis</li>
+                <li>✅ Best Practices</li>
+                <li>✅ Security Checks</li>
+            </ul>
+        </div>
+    )}
+</div>
+    
+                    
+                                </div>
 
-                            <p
-                                style={{
-                                    color: "#9ca3af"
-                                }}
-                            >
-                                Your AI review will appear here after clicking
-                                <strong> Review Code</strong>.
-                            </p>
+            </div>
 
-                        )
-                    }
+            {/* Review History */}
 
-                </div>
+            <div className="history-panel">
+
+                <h3>📜 Review History</h3>
+
+                {history.length === 0 ? (
+
+                    <p style={{ color: "#9ca3af" }}>
+                        No previous reviews.
+                    </p>
+
+                ) : (
+
+                    history.map((item) => (
+                        <div
+                            key={item.id}
+                            className="history-card"
+                            onClick={() => setReview(item.review)}
+                        >
+                            <strong>{item.language}</strong>
+                            <br />
+                            <small>{item.createdAt}</small>
+                        </div>
+                    ))
+
+                )}
 
             </div>
 
             <input
-    type="file"
+                type="file"
     ref={fileInputRef}
     style={{ display: "none" }}
     accept=".py,.java,.js,.cpp,.c,.txt"
@@ -251,12 +372,31 @@ const handleCopyReview = async () => {
         📋 Copy Review
     </button>
 
-    <button
-        onClick={handleReview}
-        disabled={loading}
-    >
-        {loading ? "Reviewing..." : "🤖 Review Code"}
+    <button onClick={handleDownloadReview}>
+        📥 Download
     </button>
+
+    <button onClick={handleClearEditor}>
+        🗑️ Clear Editor
+    </button>
+
+    <button onClick={handleClearReview}>
+        🧹 Clear Review
+    </button>
+
+    <button
+    onClick={handleReview}
+    disabled={loading}
+>
+    {loading ? (
+        <span className="loading-content">
+            <span className="loading-spinner"></span>
+            Reviewing...
+        </span>
+    ) : (
+        "🤖 Review Code"
+    )}
+</button>
 
     <button onClick={handleLogout}>
         🚪 Logout
@@ -264,6 +404,11 @@ const handleCopyReview = async () => {
 
 </div>
             </div>
+            <footer className="footer">
+    <p>© 2026 Code Reviewer AI • Analyze • Improve • Optimize</p>
+    <p>Built with ❤️ using React, Flask, MySQL & Gemini AI</p>
+</footer>
+            
 
         </div>
 
