@@ -20,7 +20,9 @@ function Dashboard() {
     const [history, setHistory] = useState(() => {
     const saved = localStorage.getItem("reviewHistory");
     return saved ? JSON.parse(saved) : [];
+    
 });
+const [searchHistory, setSearchHistory] = useState("");
 
     const fileInputRef = useRef(null);
 
@@ -216,6 +218,34 @@ const handleClearReview = () => {
     }
 
 };
+// ==========================
+// Delete History Item
+// ==========================
+
+const handleDeleteHistory = (id) => {
+
+    const updatedHistory = history.filter(item => item.id !== id);
+
+    setHistory(updatedHistory);
+
+    localStorage.setItem(
+        "reviewHistory",
+        JSON.stringify(updatedHistory)
+    );
+};
+
+// ==========================
+// Clear All History
+// ==========================
+
+const handleClearHistory = () => {
+
+    if (!window.confirm("Delete all review history?")) return;
+
+    setHistory([]);
+
+    localStorage.removeItem("reviewHistory");
+};
 
     return (
 
@@ -249,9 +279,47 @@ const handleClearReview = () => {
                 <div className="right-panel">
 
                     
-                    <h2 className="analysis-title">
-    🤖 AI Analysis
-</h2>
+                    <div className="analysis-header">
+
+    <div>
+        <h2 className="analysis-title">
+            🤖 AI Analysis
+        </h2>
+
+        <p className="analysis-subtitle">
+            Powered by Gemini AI • Real-time Code Review
+        </p>
+    </div>
+
+    <div className="analysis-badge">
+        {loading ? "Analyzing..." : "Ready"}
+    </div>
+
+</div>
+<div className="insight-grid">
+
+    <div className="insight-card">
+        <span>📄 Lines</span>
+        <h3>{code ? code.split("\n").length : 0}</h3>
+    </div>
+
+    <div className="insight-card">
+        <span>💻 Language</span>
+        <h3>{language.toUpperCase()}</h3>
+    </div>
+
+    <div className="insight-card">
+        <span>⭐ Status</span>
+        <h3>{review ? "Reviewed" : "Pending"}</h3>
+    </div>
+
+    <div className="insight-card">
+        <span>🤖 AI</span>
+        <h3>Gemini</h3>
+    </div>
+
+</div>
+
                    <div className="markdown-body">
     {review ? (
         <ReactMarkdown
@@ -303,36 +371,91 @@ const handleClearReview = () => {
                                 </div>
 
             </div>
-
             {/* Review History */}
 
-            <div className="history-panel">
+<div className="history-panel">
 
-                <h3>📜 Review History</h3>
+    <div className="history-header">
 
-                {history.length === 0 ? (
+        <h3>📜 Review History</h3>
 
-                    <p style={{ color: "#9ca3af" }}>
-                        No previous reviews.
-                    </p>
+        <button
+            className="clear-history-btn"
+            onClick={handleClearHistory}
+        >
+            Clear All
+        </button>
 
-                ) : (
+    </div>
 
-                    history.map((item) => (
-                        <div
-                            key={item.id}
-                            className="history-card"
-                            onClick={() => setReview(item.review)}
-                        >
-                            <strong>{item.language}</strong>
-                            <br />
-                            <small>{item.createdAt}</small>
-                        </div>
-                    ))
+    <input
+        type="text"
+        className="history-search"
+        placeholder="🔍 Search by language..."
+        value={searchHistory}
+        onChange={(e) => setSearchHistory(e.target.value)}
+    />
 
-                )}
+    {history
+        .filter((item) =>
+            item.language
+                .toLowerCase()
+                .includes(searchHistory.toLowerCase())
+        )
+        .length === 0 ? (
 
-            </div>
+        <p style={{ color: "#9ca3af" }}>
+            No matching reviews.
+        </p>
+
+    ) : (
+
+        history
+            .filter((item) =>
+                item.language
+                    .toLowerCase()
+                    .includes(searchHistory.toLowerCase())
+            )
+            .map((item) => (
+
+                <div
+                    key={item.id}
+                    className="history-card"
+                >
+
+                    <div
+                        style={{ flex: 1, cursor: "pointer" }}
+                        onClick={() => setReview(item.review)}
+                    >
+
+                        <strong>{item.language.toUpperCase()}</strong>
+
+                        <br />
+
+                        <small>{item.createdAt}</small>
+
+                        <p>
+                            {item.review.substring(0, 80)}...
+                        </p>
+
+                    </div>
+
+                    <button
+                        className="delete-history-btn"
+                        onClick={() => handleDeleteHistory(item.id)}
+                    >
+                        🗑
+                    </button>
+
+                </div>
+
+            ))
+
+    )}
+
+</div>
+
+            
 
             <input
                 type="file"
