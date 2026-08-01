@@ -6,10 +6,18 @@ import os
 
 app = Flask(__name__)
 
-# Allow requests from any origin during development.
-# Before production, replace "*" with your Vercel frontend URL if you want to restrict access.
+# Allow requests from any origin
 CORS(app)
 
+# Home route
+@app.route("/")
+def home():
+    return {
+        "status": "success",
+        "message": "Code Reviewer AI Backend is Running 🚀"
+    }
+
+# Register blueprints
 app.register_blueprint(auth)
 app.register_blueprint(review)
 
