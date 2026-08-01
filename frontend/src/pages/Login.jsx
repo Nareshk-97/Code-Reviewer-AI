@@ -1,21 +1,21 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    // Create navigate object
     const navigate = useNavigate();
 
     const handleLogin = async () => {
 
         try {
+            
 
             const response = await axios.post(
-                "http://127.0.0.1:5000/login",
+                "https://code-reviewer-ai-1-22gz.onrender.com/login",
                 {
                     email,
                     password
@@ -29,7 +29,6 @@ function Login() {
                 response.data.token
             );
 
-            // Navigate to Dashboard
             navigate("/dashboard");
 
         } catch (error) {
@@ -38,7 +37,9 @@ function Login() {
             console.log(error.response);
             console.log(error.response?.data);
 
-            alert("Login Failed");
+            alert(
+                error.response?.data?.message || "Login Failed"
+            );
         }
 
     };
@@ -72,7 +73,7 @@ function Login() {
 
                 <p>
                     Don't have an account?
-                    <a href="#"> Register</a>
+                    <Link to="/register"> Register</Link>
                 </p>
 
             </div>
