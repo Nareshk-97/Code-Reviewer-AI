@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://code-reviewer-ai-1-22gz.onrender.com";
 
 export const reviewCode = async (code) => {
     const token = localStorage.getItem("token");
