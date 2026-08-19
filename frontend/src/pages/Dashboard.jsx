@@ -48,6 +48,8 @@ const [searchHistory, setSearchHistory] = useState("");
                             Authorization: `Bearer ${token}`
                         }
                     }
+
+                    
                 );
 
                 setUser(response.data.user);

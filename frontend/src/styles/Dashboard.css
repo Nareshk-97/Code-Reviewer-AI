@@ -1,179 +1,853 @@
-/* ===========================
-   Global Styles
-=========================== */
+/* =========================================================
+   GLOBAL
+========================================================= */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    background:#111827;
-    font-family:Arial, Helvetica, sans-serif;
+html,
+body,
+#root {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
 }
 
-.dashboard{
-    min-height:100vh;
-    background:#111827;
+body {
+    background: #111827;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ===========================
-   Welcome Section
-=========================== */
-
-.welcome-section{
-    padding:30px 35px 15px;
+.dashboard {
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: #111827;
+    color: #ffffff;
+    overflow-x: hidden;
 }
 
-.welcome-section h1{
-    color:#ffffff;
-    font-size:32px;
-    margin-bottom:8px;
+
+/* =========================================================
+   WELCOME SECTION
+========================================================= */
+
+.welcome-section {
+    padding: 30px 35px 15px;
 }
 
-.welcome-section p{
-    color:#9ca3af;
-    font-size:16px;
+.welcome-section h1 {
+    color: #ffffff;
+    font-size: 32px;
+    margin-bottom: 8px;
 }
 
-/* ===========================
-   Main Workspace
-=========================== */
-
-.workspace{
-    display:grid;
-    grid-template-columns:1.3fr 0.7fr;
-    gap:25px;
-    padding:20px 35px;
+.welcome-section p {
+    color: #9ca3af;
+    font-size: 16px;
 }
 
-/* ===========================
-   Panels
-=========================== */
+
+/* =========================================================
+   MAIN WORKSPACE
+========================================================= */
+
+.workspace {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.2fr)
+        minmax(0, 0.8fr);
+
+    gap: 25px;
+
+    padding: 20px 35px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.workspace > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
 
 .left-panel,
-.right-panel{
-    background:#1b1f2b;
-    border:1px solid #2b3145;
-    border-radius:14px;
-    padding:20px;
-    min-height:500px;
+.right-panel {
+    background: #1b1f2b;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    min-height: 500px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow: hidden;
 }
 
 .left-panel h2,
-.right-panel h2{
-    color:#ffffff;
-    margin-bottom:15px;
-    font-size:22px;
+.right-panel h2 {
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-size: 22px;
 }
 
-/* ===========================
-   Bottom Toolbar
-=========================== */
 
-.toolbar{
-    margin:0 35px 35px;
-    background:#1b1f2b;
-    border:1px solid #2b3145;
-    border-radius:14px;
-    padding:15px 20px;
+/* =========================================================
+   EDITOR PANEL
+========================================================= */
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:15px;
+.editor-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   EDITOR HEADER
+========================================================= */
+
+.panel-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 16px 18px;
+
+    background: #202637;
+
+    border-bottom: 1px solid #2b3145;
+}
+
+.panel-header > div:first-child {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+.panel-header h3 {
+    color: #ffffff;
+
+    font-size: 20px;
+
+    margin: 0;
+}
+
+.editor-file {
+    color: #7f8ba3;
+
+    font-size: 12px;
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+}
+
+
+/* =========================================================
+   EDITOR STATUS
+========================================================= */
+
+.editor-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background: #102d22;
+
+    border: 1px solid #174d38;
+
+    color: #4ade80;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.editor-status-dot {
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow:
+        0 0 8px rgba(34, 197, 94, 0.7);
+}
+
+
+/* =========================================================
+   MONACO EDITOR
+========================================================= */
+
+.editor-container {
+    width: 100%;
+
+    max-width: 100%;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    background: #1e1e1e;
+}
+
+
+/* =========================================================
+   CODE STATISTICS
+========================================================= */
+
+.code-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    width: 100%;
+
+    max-width: 100%;
+
+    min-width: 0;
+
+    margin-top: 15px;
+}
+
+.stat-card {
+    background: #111827;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    min-width: 0;
+
+    min-height: 70px;
+
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    transition: all 0.3s ease;
+
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.12);
+}
+
+.stat-label {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+
+    margin-bottom: 6px;
+
+    white-space: nowrap;
+}
+
+.stat-value {
+    display: block;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.language-value {
+    color: #60a5fa;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   EDITOR FOOTER
+========================================================= */
+
+.editor-footer {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 12px;
+
+    padding: 8px 4px 0;
+
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+.editor-footer-left,
+.editor-footer-right {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.editor-footer-item {
+    white-space: nowrap;
+}
+
+.editor-footer-item:first-child {
+    color: #4ade80;
+}
+
+.editor-language {
+    color: #60a5fa;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   AI ANALYSIS
+========================================================= */
+
+.analysis-title {
+    color: #ffffff;
+
+    font-size: 26px;
+
+    margin-bottom: 18px;
+}
+
+.analysis-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid #2f3542;
+}
+
+.analysis-subtitle {
+    margin-top: 4px;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+}
+
+.analysis-badge {
+    background: #2563eb;
+
+    color: #ffffff;
+
+    padding: 8px 16px;
+
+    border-radius: 25px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   MARKDOWN
+========================================================= */
+
+.markdown-body {
+    color: #e5e7eb;
+
+    line-height: 1.8;
+
+    overflow-y: auto;
+
+    max-height: 650px;
+
+    padding-right: 8px;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+    color: #ffffff;
+
+    margin-top: 22px;
+
+    margin-bottom: 12px;
+}
+
+.markdown-body p {
+    margin-bottom: 14px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin-left: 25px;
+
+    margin-bottom: 14px;
+}
+
+.markdown-body li {
+    margin-bottom: 8px;
+}
+
+.markdown-body code {
+    background: #2d3748;
+
+    padding: 2px 6px;
+
+    border-radius: 5px;
+
+    font-size: 14px;
+}
+
+.markdown-body pre {
+    border-radius: 10px;
+
+    overflow: auto;
+
+    margin: 16px 0;
+}
+
+
+/* =========================================================
+   EMPTY REVIEW STATE
+========================================================= */
+
+.empty-review {
+    height: 100%;
+
+    min-height: 400px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    color: #d1d5db;
+
+    padding: 30px;
+}
+
+.empty-review h2 {
+    color: #ffffff;
+
+    margin-bottom: 15px;
+
+    font-size: 28px;
+}
+
+.empty-review p {
+    margin-bottom: 20px;
+
+    color: #9ca3af;
+
+    line-height: 1.6;
+}
+
+.empty-review ul {
+    list-style: none;
+
+    padding: 0;
+}
+
+.empty-review li {
+    margin: 10px 0;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   CODE INSIGHTS
+========================================================= */
+
+.insight-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.insight-card {
+    background: #111827;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 12px;
+
+    padding: 16px;
+
+    text-align: center;
+
+    transition: 0.3s;
+
+    min-width: 0;
+}
+
+.insight-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #3b82f6;
+}
+
+.insight-card span {
+    display: block;
+
+    color: #9ca3af;
+
+    font-size: 13px;
+
+    margin-bottom: 8px;
+}
+
+.insight-card h3 {
+    color: #ffffff;
+
+    margin: 0;
+
+    font-size: 22px;
+}
+
+
+/* =========================================================
+   REVIEW HISTORY
+========================================================= */
+
+.history-panel {
+    margin: 25px 35px;
+
+    background: #1b1f2b;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    min-width: 0;
+}
+
+.history-panel h3 {
+    color: #ffffff;
+
+    margin-bottom: 15px;
+}
+
+.history-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+}
+
+.history-search {
+    width: 100%;
+
+    padding: 12px;
+
+    margin-bottom: 18px;
+
+    background: #111827;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 10px;
+
+    color: #ffffff;
+
+    outline: none;
+}
+
+.history-search:focus {
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.history-card {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 20px;
+
+    background: #111827;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    margin-bottom: 10px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.history-card:hover {
+    border-color: #3b82f6;
+
+    transform: translateY(-2px);
+}
+
+.history-card strong {
+    color: #ffffff;
+}
+
+.history-card small {
+    color: #9ca3af;
+}
+
+.history-card p {
+    margin-top: 8px;
+
+    color: #9ca3af;
+
+    font-size: 14px;
+}
+
+.delete-history-btn,
+.clear-history-btn {
+    background: #dc2626;
+
+    border: none;
+
+    color: #ffffff;
+
+    padding: 8px 14px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.delete-history-btn:hover,
+.clear-history-btn:hover {
+    background: #b91c1c;
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar {
+    margin: 0 35px 35px;
+
+    background: #1b1f2b;
+
+    border: 1px solid #2b3145;
+
+    border-radius: 14px;
+
+    padding: 15px 20px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 15px;
 }
 
 .toolbar-left,
-.toolbar-right{
-    display:flex;
-    align-items:center;
-    gap:12px;
+.toolbar-right {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
 }
 
-.toolbar select{
-    padding:10px 14px;
-    border:none;
-    border-radius:8px;
-    background:#374151;
-    color:#fff;
-    outline:none;
+.toolbar select {
+    padding: 10px 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #374151;
+
+    color: #ffffff;
+
+    outline: none;
 }
 
-.toolbar button{
-    background:linear-gradient(135deg,#2563eb,#3b82f6);
-    color:white;
-    border:none;
-    padding:10px 18px;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:15px;
-    font-weight:600;
-    transition:all .3s ease;
-    display:flex;
-    align-items:center;
-    gap:8px;
+.toolbar button {
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #3b82f6
+        );
+
+    color: #ffffff;
+
+    border: none;
+
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
 }
 
-.toolbar button:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 18px rgba(59,130,246,.35);
+.toolbar button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 18px rgba(59, 130, 246, 0.35);
 }
 
-.toolbar button:active{
-    transform:scale(.97);
+.toolbar button:active {
+    transform: scale(0.97);
 }
 
-.toolbar button:disabled{
-    opacity:.7;
-    cursor:not-allowed;
-    transform:none;
+.toolbar button:disabled {
+    opacity: 0.7;
+
+    cursor: not-allowed;
+
+    transform: none;
 }
 
-/* ===========================
-   Responsive Design
-=========================== */
 
-@media(max-width:1000px){
-
-    .workspace{
-        grid-template-columns:1fr;
-    }
-
-    .toolbar{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .toolbar-left,
-    .toolbar-right{
-        width:100%;
-        flex-wrap:wrap;
-    }
-}
-
-/* ==========================
-   Loading Spinner
-========================== */
+/* =========================================================
+   LOADING
+========================================================= */
 
 .loading-spinner {
     width: 18px;
+
     height: 18px;
+
     border: 3px solid #ffffff40;
+
     border-top: 3px solid #60a5fa;
+
     border-radius: 50%;
+
     animation: spin 0.8s linear infinite;
 }
 
 .loading-content {
     display: flex;
+
     align-items: center;
+
     gap: 8px;
 }
 
 @keyframes spin {
+
     from {
         transform: rotate(0deg);
     }
@@ -183,305 +857,142 @@ body{
     }
 }
 
-/* ==========================
-   AI Analysis
-========================== */
 
-.analysis-title{
-    color:#ffffff;
-    font-size:26px;
-    margin-bottom:18px;
-}
-
-.markdown-body{
-    color:#e5e7eb;
-    line-height:1.8;
-    overflow-y:auto;
-    max-height:650px;
-    padding-right:8px;
-}
-
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3{
-    color:#ffffff;
-    margin-top:22px;
-    margin-bottom:12px;
-}
-
-.markdown-body p{
-    margin-bottom:14px;
-}
-
-.markdown-body ul,
-.markdown-body ol{
-    margin-left:25px;
-    margin-bottom:14px;
-}
-
-.markdown-body li{
-    margin-bottom:8px;
-}
-
-.markdown-body code{
-    background:#2d3748;
-    padding:2px 6px;
-    border-radius:5px;
-    font-size:14px;
-}
-
-.markdown-body pre{
-    border-radius:10px;
-    overflow:auto;
-    margin:16px 0;
-}
-/* ==========================
-   Empty Review State
-========================== */
-
-.empty-review{
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    color:#d1d5db;
-    padding:30px;
-}
-
-.empty-review h2{
-    color:#ffffff;
-    margin-bottom:15px;
-    font-size:28px;
-}
-
-.empty-review p{
-    margin-bottom:20px;
-    color:#9ca3af;
-    line-height:1.6;
-}
-
-.empty-review ul{
-    list-style:none;
-    padding:0;
-}
-
-.empty-review li{
-    margin:10px 0;
-    font-size:16px;
-}
-/* ==========================
-   Code Statistics
-========================== */
-
-.code-stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:15px;
-    margin-top:18px;
-}
-
-.stat-card{
-    background:#111827;
-    border:1px solid #2b3145;
-    border-radius:10px;
-    padding:14px;
-    text-align:center;
-    transition:all .3s ease;
-}
-
-.stat-card:hover{
-    transform:translateY(-3px);
-    border-color:#3b82f6;
-}
-
-.stat-label{
-    display:block;
-    color:#9ca3af;
-    font-size:13px;
-    margin-bottom:8px;
-}
-
-.stat-value{
-    display:block;
-    color:#ffffff;
-    font-size:20px;
-    font-weight:bold;
-}
-
-@media(max-width:768px){
-    .code-stats{
-        grid-template-columns:repeat(2,1fr);
-    }
-}
-/* ==========================
-   Review History
-========================== */
-
-.history-panel{
-    margin:25px 35px;
-    background:#1b1f2b;
-    border:1px solid #2b3145;
-    border-radius:14px;
-    padding:20px;
-}
-
-.history-panel h3{
-    color:#ffffff;
-    margin-bottom:15px;
-}
-
-.history-card{
-    background:#111827;
-    border:1px solid #2b3145;
-    border-radius:10px;
-    padding:12px;
-    margin-bottom:10px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.history-card:hover{
-    border-color:#3b82f6;
-    transform:translateY(-2px);
-}
-
-.history-card strong{
-    color:#ffffff;
-}
-
-.history-card small{
-    color:#9ca3af;
-}
-/* ==========================
-   Footer
-========================== */
+/* =========================================================
+   FOOTER
+========================================================= */
 
 .footer {
     margin-top: 40px;
+
     padding: 25px 20px;
+
     text-align: center;
+
     border-top: 1px solid #2b3145;
+
     color: #9ca3af;
+
     font-size: 14px;
 }
 
-.footer p{
-    margin:6px 0;
-}
-.analysis-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-padding-bottom:12px;
-border-bottom:1px solid #2f3542;
+.footer p {
+    margin: 6px 0;
 }
 
-.analysis-subtitle{
-margin-top:4px;
-color:#9ca3af;
-font-size:14px;
+
+/* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .toolbar {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+        width: 100%;
+
+        flex-wrap: wrap;
+    }
+
+    .insight-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
 }
 
-.analysis-badge{
-background:#2563eb;
-color:white;
-padding:8px 16px;
-border-radius:25px;
-font-size:13px;
-font-weight:600;
-}
-/* ==========================
-   Code Insights
-========================== */
 
-.insight-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:15px;
-margin-bottom:20px;
-}
+/* =========================================================
+   RESPONSIVE - MOBILE
+========================================================= */
 
-.insight-card{
-background:#111827;
-border:1px solid #2b3145;
-border-radius:12px;
-padding:16px;
-text-align:center;
-transition:.3s;
-}
+@media (max-width: 768px) {
 
-.insight-card:hover{
-transform:translateY(-3px);
-border-color:#3b82f6;
-}
+    .welcome-section {
+        padding: 25px 20px 10px;
+    }
 
-.insight-card span{
-display:block;
-color:#9ca3af;
-font-size:13px;
-margin-bottom:8px;
+    .welcome-section h1 {
+        font-size: 27px;
+    }
+
+    .workspace {
+        padding: 15px 20px;
+    }
+
+    .history-panel {
+        margin: 20px;
+    }
+
+    .toolbar {
+        margin: 0 20px 25px;
+    }
+
+    .code-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .analysis-header {
+        align-items: flex-start;
+    }
 }
 
-.insight-card h3{
-color:#fff;
-margin:0;
-font-size:22px;
-}
 
-@media(max-width:900px){
-.insight-grid{
-grid-template-columns:repeat(2,1fr);
-}
-}
-/* ==========================
-   Review History Upgrade
-========================== */
+/* =========================================================
+   RESPONSIVE - SMALL MOBILE
+========================================================= */
 
-.history-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
-}
+@media (max-width: 500px) {
 
-.history-search{
-width:100%;
-padding:12px;
-margin-bottom:18px;
-background:#111827;
-border:1px solid #2b3145;
-border-radius:10px;
-color:white;
-outline:none;
-}
+    .left-panel,
+    .right-panel {
+        padding: 14px;
+    }
 
-.history-card{
-display:flex;
-justify-content:space-between;
-align-items:flex-start;
-gap:20px;
-}
+    .panel-header {
+        align-items: flex-start;
 
-.history-card p{
-margin-top:8px;
-color:#9ca3af;
-font-size:14px;
-}
+        flex-direction: column;
+    }
 
-.delete-history-btn,
-.clear-history-btn{
-background:#dc2626;
-border:none;
-color:white;
-padding:8px 14px;
-border-radius:8px;
-cursor:pointer;
-}
+    .editor-status {
+        align-self: flex-start;
+    }
 
-.delete-history-btn:hover,
-.clear-history-btn:hover{
-background:#b91c1c;
+    .code-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 10px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+    }
+
+    .stat-value {
+        font-size: 16px;
+    }
+
+    .history-card {
+        flex-direction: column;
+    }
+
+    .insight-grid {
+        grid-template-columns: 1fr;
+    }
 }

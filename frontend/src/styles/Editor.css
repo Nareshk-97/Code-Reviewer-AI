@@ -1,43 +1,242 @@
-.editor-panel{
+/* =========================================================
+   EDITOR STYLES
+========================================================= */
 
-    background:#1b1f2b;
+.editor-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 
-    border-radius:15px;
-
-    min-height:650px;
-
-    border:1px solid #2b3145;
-
-    overflow:hidden;
+    overflow: hidden;
 }
 
-.panel-header{
 
-    padding:18px 25px;
+/* =========================================================
+   HEADER
+========================================================= */
 
-    border-bottom:1px solid #2b3145;
+.editor-panel .panel-header {
+    display: flex;
 
-    background:#202637;
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    width: 100%;
 }
 
-.panel-header h3{
+.editor-panel .panel-header > div:first-child {
+    display: flex;
 
-    color:white;
+    flex-direction: column;
 
-    font-size:20px;
+    gap: 3px;
+
+    min-width: 0;
 }
 
-.editor-placeholder{
+.editor-panel .panel-header h3 {
+    color: #ffffff;
 
-    display:flex;
+    margin: 0;
 
-    justify-content:center;
+    font-size: 20px;
+}
 
-    align-items:center;
+.editor-file {
+    color: #7f8ba3;
 
-    height:560px;
+    font-size: 12px;
 
-    color:#8b93a7;
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+}
 
-    font-size:20px;
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.editor-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    background: #102d22;
+
+    border: 1px solid #174d38;
+
+    color: #4ade80;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.editor-status-dot {
+    width: 7px;
+
+    height: 7px;
+
+    background: #22c55e;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 8px rgba(34, 197, 94, 0.7);
+}
+
+
+/* =========================================================
+   EDITOR CONTAINER
+========================================================= */
+
+.editor-container {
+    width: 100%;
+
+    max-width: 100%;
+
+    min-width: 0;
+
+    background: #1e1e1e;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.editor-panel .code-stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    width: 100%;
+
+    min-width: 0;
+}
+
+.editor-panel .stat-card {
+    min-width: 0;
+
+    width: 100%;
+
+    overflow: hidden;
+}
+
+.editor-panel .stat-label {
+    white-space: nowrap;
+}
+
+.editor-panel .stat-value {
+    max-width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.language-value {
+    color: #60a5fa;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.editor-footer {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding-top: 8px;
+
+    font-size: 11px;
+
+    color: #64748b;
+}
+
+.editor-footer-left,
+.editor-footer-right {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.editor-footer-item {
+    white-space: nowrap;
+}
+
+.editor-footer-item:first-child {
+    color: #4ade80;
+}
+
+.editor-language {
+    color: #60a5fa;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .editor-panel .code-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    .editor-panel .panel-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .editor-status {
+        align-self: flex-start;
+    }
+
+    .editor-panel .code-stats {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .editor-footer {
+        font-size: 10px;
+    }
 }
