@@ -34,7 +34,7 @@ function Login() {
             setLoading(true);
 
             const response = await axios.post(
-                "https://code-reviewer-ai-1-22gz.onrender.com/login",
+                "http://127.0.0.1:5000/login",
                 {
                     email,
                     password

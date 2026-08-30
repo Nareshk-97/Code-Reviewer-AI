@@ -1,13 +1,23 @@
-import psycopg2
-from config import DATABASE_URL
+import mysql.connector
+from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
 
 
 def get_db_connection():
     try:
-        connection = psycopg2.connect(DATABASE_URL)
-        print("✅ Connected to PostgreSQL Database")
+
+        connection = mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
+        )
+
+        print("✅ Connected to MySQL Database")
+
         return connection
 
     except Exception as err:
+
         print(f"❌ Database Connection Error: {err}")
+
         return None

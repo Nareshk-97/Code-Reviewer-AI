@@ -1,6 +1,13 @@
 from flask import Blueprint, request, jsonify
+
 from ai.gemini import ask_gemini
 from utils.auth_middleware import token_required
+
+from review_engine.engine import analyze_review
+from review_engine.fallback_reviewer import generate_fallback_review
+from scoring.review_scorer import calculate_review_score
+
+
 
 review = Blueprint("review", __name__)
 
@@ -9,82 +16,301 @@ review = Blueprint("review", __name__)
 @token_required
 def review_code():
 
+    # ==========================================
+    # GET REQUEST DATA
+    # ==========================================
+
     data = request.get_json()
 
-    code = data.get("code")
-    
-
-    if not code:
+    if not data:
         return jsonify({
             "success": False,
-            "message": "Code is required"
+            "message": "Invalid request data."
         }), 400
 
+    code = data.get("code")
+
+    if not code or not code.strip():
+        return jsonify({
+            "success": False,
+            "message": "Code is required."
+        }), 400
+
+    # ==========================================
+    # LOCAL REVIEW ENGINE
+    # ==========================================
+
+    try:
+
+        analysis = analyze_review(code)
+
+        language = analysis["language"]
+
+        syntax_analysis = analysis["syntax"]
+
+        code_analysis = analysis["code_statistics"]
+
+        security_analysis = analysis["security"]
+
+        complexity_analysis = analysis["complexity"]
+
+        # ==========================================
+        # REVIEW SCORE
+        # ==========================================
+
+        score = calculate_review_score(
+            syntax_analysis,
+            code_analysis,
+            security_analysis,
+            complexity_analysis
+        )
+
+    except Exception as err:
+
+        print(
+            f"❌ Review Engine Error: {err}"
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Code analysis failed."
+        }), 500
+
+    # ==========================================
+    # GEMINI AI PROMPT
+    # ==========================================
+
     prompt = f"""
-You are a Senior Software Engineer, Technical Lead, and Code Reviewer with over 15 years of experience.
+You are a Senior Software Engineer, Technical Lead,
+and Professional Code Reviewer with over 15 years
+of software development experience.
 
-Your task is to automatically detect the programming language from the given code and perform a professional code review.
+Your task is to perform a complete professional
+code review.
 
-Code:
+The programming language must be detected from
+the actual source code.
+
+==============================
+REVIEW ENGINE DATA
+==============================
+
+Detected Language:
+{language}
+
+Syntax Analysis:
+{syntax_analysis}
+
+Code Statistics:
+{code_analysis}
+
+Security Analysis:
+{security_analysis}
+
+Complexity Analysis:
+{complexity_analysis}
+
+Backend Calculated Score:
+{score}
+
+==============================
+SOURCE CODE
+==============================
+
 {code}
 
-Return the review in Markdown using the following sections.
+==============================
+REVIEW REQUIREMENTS
+==============================
+
+Return the review in Markdown.
 
 # Programming Language
+
 Detect and mention the programming language.
 
 # Summary
-Provide a short summary (2–3 lines) of what the code does.
+
+Provide a short summary of what the code does.
 
 # Errors
+
 Mention syntax or compilation errors.
-If none, write "None".
+
+Use the syntax analysis as additional information.
+
+If none, write:
+
+None
 
 # Bugs
+
 Mention logical or runtime bugs.
-If none, write "None".
+
+If none, write:
+
+None
 
 # Improvements
-Suggest improvements for readability, maintainability, and performance.
+
+Suggest improvements for:
+
+- Readability
+- Maintainability
+- Performance
+- Code structure
 
 # Optimized Code
-Provide an improved version of the code in the SAME programming language.
+
+Provide an improved version of the code.
+
+IMPORTANT:
+
+Keep the optimized code in the SAME programming language.
+
+Do NOT change the programming language.
 
 # Best Practices
-Suggest clean code practices and coding standards.
+
+Suggest clean coding practices
+and appropriate coding standards.
 
 # Security Checks
-Mention any possible security issues.
-If none, write "None".
+
+Mention possible security issues.
+
+Use the security analysis as
+additional information.
+
+If none, write:
+
+None
 
 # Time Complexity
+
 Mention the approximate time complexity.
 
+Use the complexity analysis as
+additional information.
+
 # Space Complexity
+
 Mention the approximate space complexity.
 
+Use the complexity analysis as
+additional information.
+
 # Expected Output
-Predict the output without executing the program.
-If the output depends on user input, explain why.
+
+Predict the output without executing
+the program.
+
+If the output depends on user input,
+explain why.
 
 # Overall Rating
-Give a rating out of 10 with a short justification.
 
-Rules:
-- You MUST include every section exactly as listed.
-- Do NOT skip any section.
-- If a section has nothing to report, write "None".
-- Detect the programming language automatically.
+Give a rating out of 10 with
+a short justification.
+
+==============================
+IMPORTANT RULES
+==============================
+
+- Include every section.
+- Do not skip sections.
+- Keep the sections in the exact order.
+- Detect the language automatically.
 - Never assume the language is Python.
-- Keep the optimized code in the same programming language.
+- Keep optimized code in the same language.
 - Do not change the programming language.
-- Predict the expected output without executing the code.
+- Do not execute the code.
+- Predict the output without execution.
 - Use proper Markdown headings.
-- Return all sections in the specified order.
 """
-    result = ask_gemini(prompt)
+
+    # ==========================================
+    # GEMINI AI REVIEW
+    # ==========================================
+
+    try:
+
+        result = ask_gemini(prompt)
+
+        ai_available = True
+
+        print(
+            "✅ Gemini review generated successfully."
+        )
+
+    except Exception as err:
+
+        print(
+            f"❌ AI Review Error: {err}"
+        )
+
+        print(
+            "🛡️ Using local fallback reviewer..."
+        )
+
+        # ======================================
+        # LOCAL FALLBACK REVIEWER
+        # ======================================
+
+        try:
+
+            result = generate_fallback_review(
+                code,
+                language,
+                syntax_analysis,
+                code_analysis,
+                security_analysis,
+                complexity_analysis
+            )
+
+            ai_available = False
+
+            print(
+                "✅ Local fallback review generated successfully."
+            )
+
+        except Exception as fallback_err:
+
+            print(
+                f"❌ Fallback Reviewer Error: {fallback_err}"
+            )
+
+            return jsonify({
+                "success": False,
+                "message": "Review generation failed."
+            }), 500
+
+    # ==========================================
+    # FINAL RESPONSE
+    # ==========================================
 
     return jsonify({
+
         "success": True,
-        "review": result
+
+        "review": result,
+
+        "ai_available": ai_available,
+
+        "score": score,
+
+        "python_analysis": {
+
+            "language": language,
+
+            "syntax": syntax_analysis,
+
+            "code_statistics": code_analysis,
+
+            "security": security_analysis,
+
+            "complexity": complexity_analysis
+
+        }
+
     }), 200
