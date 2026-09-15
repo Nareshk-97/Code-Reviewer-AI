@@ -3,12 +3,19 @@ from google import genai
 from config import GEMINI_API_KEY
 
 
+# ==========================================
+# GEMINI CLIENT
+# ==========================================
+
 client = genai.Client(
     api_key=GEMINI_API_KEY
 )
 
 
-# Fast/current models
+# ==========================================
+# GEMINI MODEL FALLBACKS
+# ==========================================
+
 MODELS = [
     "gemini-3.6-flash",
     "gemini-3.5-flash-lite",
@@ -16,13 +23,41 @@ MODELS = [
 ]
 
 
+# ==========================================
+# CUSTOM GEMINI ERROR
+# ==========================================
+
+class GeminiReviewError(Exception):
+    """
+    Custom exception for Gemini review failures.
+    """
+    pass
+
+
+# ==========================================
+# ASK GEMINI
+# ==========================================
+
 def ask_gemini(prompt):
+
+    if not prompt or not prompt.strip():
+        raise GeminiReviewError(
+            "Gemini prompt cannot be empty."
+        )
+
+    if not GEMINI_API_KEY:
+        raise GeminiReviewError(
+            "Gemini API key is not configured."
+        )
 
     last_error = None
 
+    # Try each Gemini model
     for model in MODELS:
 
-        print(f"🤖 Trying Gemini model: {model}")
+        print(
+            f"🤖 Trying Gemini model: {model}"
+        )
 
         try:
 
@@ -31,6 +66,7 @@ def ask_gemini(prompt):
                 contents=prompt
             )
 
+            # Check response
             if response and response.text:
 
                 print(
@@ -39,8 +75,13 @@ def ask_gemini(prompt):
 
                 return response.text
 
+            # Empty response
             print(
                 f"⚠️ {model} returned an empty response."
+            )
+
+            last_error = GeminiReviewError(
+                f"{model} returned an empty response."
             )
 
         except Exception as err:
@@ -52,9 +93,17 @@ def ask_gemini(prompt):
             )
 
             print(
-                "⚡ Switching immediately to next model..."
+                "⚡ Switching to next Gemini model..."
             )
 
-    print("❌ All Gemini models failed.")
+    # ==========================================
+    # ALL MODELS FAILED
+    # ==========================================
 
-    raise last_error
+    print(
+        "❌ All Gemini models failed."
+    )
+
+    raise GeminiReviewError(
+        "Gemini AI service is currently unavailable."
+    ) from last_error

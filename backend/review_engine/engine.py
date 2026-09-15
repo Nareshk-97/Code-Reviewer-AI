@@ -7,7 +7,7 @@ from review_engine.complexity_analyzer import analyze_complexity
 
 def analyze_review(code):
     """
-    Run the complete Python code review engine.
+    Run the complete multi-language code review engine.
     """
 
     if not code or not code.strip():
@@ -20,7 +20,7 @@ def analyze_review(code):
     syntax = check_syntax(code, language)
 
     # Analyze code structure
-    code_statistics = analyze_code(code)
+    code_statistics = analyze_code(code, language)
 
     # Check security risks
     security = check_security(code)

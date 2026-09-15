@@ -1,27 +1,66 @@
 from functools import wraps
+
 from flask import request, jsonify
+
 import jwt
+
 from config import JWT_SECRET_KEY
+
 
 def token_required(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
 
-        token = None
+        # ==========================================
+        # CHECK AUTHORIZATION HEADER
+        # ==========================================
 
-        if "Authorization" in request.headers:
+        auth_header = request.headers.get("Authorization")
 
-            auth_header = request.headers["Authorization"]
+        if not auth_header:
 
-            if auth_header.startswith("Bearer "):
-                token = auth_header.split(" ")[1]
-
-        if not token:
             return jsonify({
                 "success": False,
                 "message": "Token is missing!"
             }), 401
+
+        # ==========================================
+        # VALIDATE BEARER FORMAT
+        # ==========================================
+
+        parts = auth_header.split()
+
+        if len(parts) != 2 or parts[0].lower() != "bearer":
+
+            return jsonify({
+                "success": False,
+                "message": "Invalid authorization header."
+            }), 401
+
+        token = parts[1]
+
+        if not token:
+
+            return jsonify({
+                "success": False,
+                "message": "Token is missing!"
+            }), 401
+
+        # ==========================================
+        # CHECK JWT SECRET
+        # ==========================================
+
+        if not JWT_SECRET_KEY:
+
+            return jsonify({
+                "success": False,
+                "message": "Authentication service is not configured."
+            }), 500
+
+        # ==========================================
+        # VERIFY TOKEN
+        # ==========================================
 
         try:
 
@@ -46,6 +85,10 @@ def token_required(f):
                 "success": False,
                 "message": "Invalid token!"
             }), 401
+
+        # ==========================================
+        # TOKEN VALID
+        # ==========================================
 
         return f(*args, **kwargs)
 

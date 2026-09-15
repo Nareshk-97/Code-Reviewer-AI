@@ -1,44 +1,84 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 import { reviewCode } from "../services/reviewService";
+import {getHistory,saveHistory,deleteHistory,clearHistory} from "../services/historyService";
 import "../styles/Dashboard.css";
+
 import EditorPanel from "../components/EditorPanel";
 import Navbar from "../components/Navbar";
+
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 
 function Dashboard() {
 
+    // ==========================
+    // USER
+    // ==========================
+
     const [user, setUser] = useState(null);
+
+
+    // ==========================
+    // CODE
+    // ==========================
 
     const [code, setCode] = useState("");
 
     const [language, setLanguage] = useState("python");
 
+
+    // ==========================
+    // REVIEW
+    // ==========================
+
     const [review, setReview] = useState("");
 
-    // ⭐ Backend calculated score
+
+    // ==========================
+    // SCORE
+    // ==========================
+
     const [score, setScore] = useState(null);
+
+
+    // ==========================
+    // LOADING
+    // ==========================
 
     const [loading, setLoading] = useState(false);
 
 
-    const [history, setHistory] = useState(() => {
+    // ==========================
+    // REVIEW HISTORY
+    // ==========================
 
-        const saved = localStorage.getItem("reviewHistory");
+    const [history, setHistory] = useState([]);
 
-        return saved ? JSON.parse(saved) : [];
 
-    });
-
+    // ==========================
+    // HISTORY SEARCH
+    // ==========================
 
     const [searchHistory, setSearchHistory] = useState("");
 
+
+    // ==========================
+    // FILE INPUT
+    // ==========================
+
     const fileInputRef = useRef(null);
+
+
+    // ==========================
+    // NAVIGATION
+    // ==========================
 
     const navigate = useNavigate();
 
@@ -56,6 +96,7 @@ function Dashboard() {
         if (!match) {
             return language;
         }
+
 
         const detected = match[1]
             .trim()
@@ -106,7 +147,6 @@ function Dashboard() {
             navigate("/login");
 
             return;
-
         }
 
 
@@ -145,115 +185,252 @@ function Dashboard() {
 
 
     // ==========================
-    // AI Review
+    // Fetch Review History
     // ==========================
 
-    const handleReview = async () => {
+    useEffect(() => {
 
-        if (!code.trim()) {
+        const fetchHistory = async () => {
 
-            alert("Please enter some code.");
-
-            return;
-        }
+            const token = localStorage.getItem("token");
 
 
-        try {
-
-            setLoading(true);
-
-
-            const response = await reviewCode(code);
-
-
-            if (response.success) {
-
-                const aiReview = response.review;
-
-
-                // ⭐ Get backend calculated score
-                const reviewScore = response.score;
-
-
-                // Detect language from review
-                const detectedLanguage =
-                    detectLanguageFromReview(aiReview);
-
-
-                // Update language
-                setLanguage(detectedLanguage);
-
-
-                // Display review
-                setReview(aiReview);
-
-
-                // ⭐ Display score
-                setScore(reviewScore);
-
-
-                // ==========================
-                // Save Review History
-                // ==========================
-
-                const newReview = {
-
-                    id: Date.now(),
-
-                    language: detectedLanguage,
-
-                    review: aiReview,
-
-                    score: reviewScore,
-
-                    createdAt: new Date().toLocaleString()
-
-                };
-
-
-                const updatedHistory = [
-
-                    newReview,
-
-                    ...history
-
-                ].slice(0, 5);
-
-
-                setHistory(updatedHistory);
-
-
-                localStorage.setItem(
-                    "reviewHistory",
-                    JSON.stringify(updatedHistory)
-                );
-
-
-            } else {
-
-                alert(response.message);
-
+            if (!token) {
+                return;
             }
 
 
-        } catch (error) {
+            try {
 
-            console.error(
-                "Review Error:",
-                error
-            );
+                const response = await getHistory();
 
-            alert(
-                "Unable to review code."
-            );
 
-        } finally {
+                if (response.success) {
 
-            setLoading(false);
+                    const formattedHistory =
+                        (response.history || []).map(
+                            (item) => ({
+
+                                id: item.id,
+
+                                language: item.language,
+
+                                code: item.code,
+
+                                review: item.review,
+
+                                score: {
+
+                                    overall_score:
+                                        Number(
+                                            item.overall_score
+                                        ),
+
+                                    syntax_score:
+                                        Number(
+                                            item.syntax_score
+                                        ),
+
+                                    security_score:
+                                        Number(
+                                            item.security_score
+                                        ),
+
+                                    complexity_score:
+                                        Number(
+                                            item.complexity_score
+                                        ),
+
+                                    structure_score:
+                                        Number(
+                                            item.structure_score
+                                        ),
+
+                                    maintainability_score:
+                                        Number(
+                                            item.maintainability_score
+                                        )
+
+                                },
+
+                                createdAt:
+                                    item.created_at
+
+                            })
+                        );
+
+
+                    setHistory(formattedHistory);
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "History Fetch Error:",
+                    error
+                );
+
+            }
+
+        };
+
+
+        fetchHistory();
+
+    }, []);
+
+
+
+    // ==========================
+// AI Review
+// ==========================
+
+const handleReview = async () => {
+
+    if (!code.trim()) {
+
+        alert("Please enter some code.");
+
+        return;
+    }
+
+
+    try {
+
+        setLoading(true);
+
+
+        // ==========================
+        // Send Code to Backend
+        // ==========================
+
+        const response = await reviewCode(code);
+
+
+        if (response.success) {
+
+            const aiReview = response.review;
+
+
+            // ==========================
+            // Get Backend Score
+            // ==========================
+
+            const reviewScore = response.score;
+
+
+            // ==========================
+            // Detect Language
+            // ==========================
+
+            const detectedLanguage =
+                detectLanguageFromReview(aiReview);
+
+
+            // ==========================
+            // Update Language
+            // ==========================
+
+            setLanguage(detectedLanguage);
+
+
+            // ==========================
+            // Display Review
+            // ==========================
+
+            setReview(aiReview);
+
+
+            // ==========================
+            // Display Score
+            // ==========================
+
+            setScore(reviewScore);
+
+
+            // ==========================
+            // SAVE HISTORY TO MYSQL
+            // ==========================
+
+            const historyResponse =
+                await saveHistory(
+                    detectedLanguage,
+                    code,
+                    aiReview,
+                    reviewScore
+                );
+
+
+            if (!historyResponse.success) {
+
+                alert(
+                    "Review completed, but history could not be saved."
+                );
+
+                return;
+            }
+
+
+            // ==========================
+            // Add Saved Review to UI
+            // ==========================
+
+            const newReview = {
+
+                id: historyResponse.history_id,
+
+                language: detectedLanguage,
+
+                code: code,
+
+                review: aiReview,
+
+                score: reviewScore,
+
+                createdAt: new Date().toLocaleString()
+
+            };
+
+
+            setHistory((previousHistory) => [
+
+                newReview,
+
+                ...previousHistory
+
+            ]);
+
+        } else {
+
+            alert(response.message);
 
         }
 
-    };
+
+    } catch (error) {
+
+        console.error(
+            "Review Error:",
+            error
+        );
+
+
+        alert(
+            "Unable to review code."
+        );
+
+
+    } finally {
+
+        setLoading(false);
+
+    }
+
+};
+
+
+    
 
 
     // ==========================
@@ -326,13 +503,16 @@ function Dashboard() {
                 review
             );
 
+
             alert(
                 "Review copied successfully!"
             );
 
+
         } catch (error) {
 
             console.error(error);
+
 
             alert(
                 "Failed to copy review."
@@ -378,13 +558,16 @@ function Dashboard() {
 
         link.href = url;
 
+
         link.download =
             "AI_Review.txt";
 
 
         document.body.appendChild(link);
 
+
         link.click();
+
 
         document.body.removeChild(link);
 
@@ -427,7 +610,9 @@ function Dashboard() {
 
             setReview("");
 
-            // ⭐ Clear score too
+
+            // Clear score too
+
             setScore(null);
 
         }
@@ -436,52 +621,134 @@ function Dashboard() {
 
 
     // ==========================
-    // Delete History
-    // ==========================
+// Delete History
+// ==========================
 
-    const handleDeleteHistory = (id) => {
+const handleDeleteHistory = async (id) => {
 
-        const updatedHistory =
-            history.filter(
-                item => item.id !== id
+    if (
+        !window.confirm(
+            "Delete this review?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await deleteHistory(id);
+
+
+        if (response.success) {
+
+            setHistory((previousHistory) =>
+                previousHistory.filter(
+                    item => item.id !== id
+                )
             );
 
 
-        setHistory(updatedHistory);
+            // If deleted review is currently displayed,
+            // clear the review and score.
+
+            const deletedItem =
+                history.find(
+                    item => item.id === id
+                );
 
 
-        localStorage.setItem(
-            "reviewHistory",
-            JSON.stringify(updatedHistory)
-        );
+            if (deletedItem) {
 
-    };
+                setReview((currentReview) =>
+                    currentReview === deletedItem.review
+                        ? ""
+                        : currentReview
+                );
 
 
-    // ==========================
-    // Clear History
-    // ==========================
+                setScore((currentScore) =>
+                    currentScore === deletedItem.score
+                        ? null
+                        : currentScore
+                );
 
-    const handleClearHistory = () => {
+            }
 
-        if (
-            !window.confirm(
-                "Delete all review history?"
-            )
-        ) {
+        } else {
 
-            return;
+            alert(
+                response.message ||
+                "Failed to delete review."
+            );
 
         }
 
+    } catch (error) {
 
-        setHistory([]);
-
-        localStorage.removeItem(
-            "reviewHistory"
+        console.error(
+            "Delete History Error:",
+            error
         );
 
-    };
+
+        alert(
+            "Unable to delete review."
+        );
+
+    }
+
+};
+
+
+    // ==========================
+// Clear All History
+// ==========================
+
+const handleClearHistory = async () => {
+
+    if (
+        !window.confirm(
+            "Are you sure you want to delete all review history?"
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const response = await clearHistory();
+
+        if (response.success) {
+
+            setHistory([]);
+
+            setReview("");
+
+            setScore(null);
+
+        } else {
+
+            alert(
+                response.message ||
+                "Failed to clear history."
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Clear History Error:",
+            error
+        );
+
+        alert(
+            "Unable to clear review history."
+        );
+    }
+};
 
 
     return (
@@ -670,7 +937,7 @@ function Dashboard() {
                         </div>
 
 
-                        {/* ⭐ NEW SCORE CARD */}
+                        {/* ⭐ SCORE CARD */}
 
                         <div className="insight-card score-card">
 
@@ -1124,10 +1391,13 @@ function Dashboard() {
                                             item.review
                                         );
 
-                                        // ⭐ Restore score
+
+                                        // Restore score
+
                                         setScore(
                                             item.score || null
                                         );
+
 
                                         setLanguage(
                                             item.language
@@ -1226,34 +1496,73 @@ function Dashboard() {
                 <div className="toolbar-left">
 
                     <select
+    value={language}
+    onChange={(e) =>
+        setLanguage(e.target.value)
+    }
+>
 
-                        value={language}
+    <option value="python">
+        Python
+    </option>
 
-                        onChange={(e) =>
-                            setLanguage(
-                                e.target.value
-                            )
-                        }
+    <option value="java">
+        Java
+    </option>
 
-                    >
+    <option value="javascript">
+        JavaScript
+    </option>
 
-                        <option value="python">
-                            Python
-                        </option>
+    <option value="typescript">
+        TypeScript
+    </option>
 
-                        <option value="java">
-                            Java
-                        </option>
+    <option value="c">
+        C
+    </option>
 
-                        <option value="javascript">
-                            JavaScript
-                        </option>
+    <option value="cpp">
+        C++
+    </option>
 
-                        <option value="cpp">
-                            C++
-                        </option>
+    <option value="csharp">
+        C#
+    </option>
 
-                    </select>
+    <option value="go">
+        Go
+    </option>
+
+    <option value="rust">
+        Rust
+    </option>
+
+    <option value="php">
+        PHP
+    </option>
+
+    <option value="kotlin">
+        Kotlin
+    </option>
+
+    <option value="swift">
+        Swift
+    </option>
+
+    <option value="html">
+        HTML
+    </option>
+
+    <option value="css">
+        CSS
+    </option>
+
+    <option value="sql">
+        SQL
+    </option>
+
+</select>
 
                 </div>
 
@@ -1264,35 +1573,45 @@ function Dashboard() {
                     <button
                         onClick={handleUploadClick}
                     >
+
                         📁 Upload
+
                     </button>
 
 
                     <button
                         onClick={handleCopyReview}
                     >
+
                         📋 Copy Review
+
                     </button>
 
 
                     <button
                         onClick={handleDownloadReview}
                     >
+
                         📥 Download
+
                     </button>
 
 
                     <button
                         onClick={handleClearEditor}
                     >
+
                         🗑️ Clear Editor
+
                     </button>
 
 
                     <button
                         onClick={handleClearReview}
                     >
+
                         🧹 Clear Review
+
                     </button>
 
 
@@ -1326,7 +1645,9 @@ function Dashboard() {
                     <button
                         onClick={handleLogout}
                     >
+
                         🚪 Logout
+
                     </button>
 
                 </div>

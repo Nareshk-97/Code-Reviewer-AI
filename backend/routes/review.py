@@ -1,18 +1,31 @@
 from flask import Blueprint, request, jsonify
+from werkzeug.exceptions import BadRequest
 
 from ai.gemini import ask_gemini
 from utils.auth_middleware import token_required
+from utils.rate_limiter import limiter
 
 from review_engine.engine import analyze_review
 from review_engine.fallback_reviewer import generate_fallback_review
 from scoring.review_scorer import calculate_review_score
 
 
-
 review = Blueprint("review", __name__)
 
 
+# ==========================================
+# MAXIMUM CODE SIZE
+# ==========================================
+
+MAX_CODE_LENGTH = 100000
+
+
+# ==========================================
+# CODE REVIEW ENDPOINT
+# ==========================================
+
 @review.route("/review", methods=["POST"])
+@limiter.limit("5 per minute")
 @token_required
 def review_code():
 
@@ -20,9 +33,22 @@ def review_code():
     # GET REQUEST DATA
     # ==========================================
 
-    data = request.get_json()
+    if not request.is_json:
+        return jsonify({
+            "success": False,
+            "message": "Content-Type must be application/json."
+        }), 400
 
-    if not data:
+    try:
+        data = request.get_json()
+
+    except BadRequest:
+        return jsonify({
+            "success": False,
+            "message": "Invalid JSON."
+        }), 400
+
+    if not isinstance(data, dict):
         return jsonify({
             "success": False,
             "message": "Invalid request data."
@@ -30,11 +56,38 @@ def review_code():
 
     code = data.get("code")
 
-    if not code or not code.strip():
+    # ==========================================
+    # CODE TYPE VALIDATION
+    # ==========================================
+
+    if not isinstance(code, str):
+        return jsonify({
+            "success": False,
+            "message": "Code must be a string."
+        }), 400
+
+    # ==========================================
+    # EMPTY CODE VALIDATION
+    # ==========================================
+
+    if not code.strip():
         return jsonify({
             "success": False,
             "message": "Code is required."
         }), 400
+
+    # ==========================================
+    # CODE SIZE VALIDATION
+    # ==========================================
+
+    if len(code) > MAX_CODE_LENGTH:
+        return jsonify({
+            "success": False,
+            "message": (
+                "Code is too large. "
+                "Maximum allowed size is 100000 characters."
+            )
+        }), 413
 
     # ==========================================
     # LOCAL REVIEW ENGINE
@@ -54,9 +107,9 @@ def review_code():
 
         complexity_analysis = analysis["complexity"]
 
-        # ==========================================
+        # ======================================
         # REVIEW SCORE
-        # ==========================================
+        # ======================================
 
         score = calculate_review_score(
             syntax_analysis,
@@ -299,7 +352,9 @@ IMPORTANT RULES
 
         "score": score,
 
-        "python_analysis": {
+        # Generic analysis name because the project
+        # supports multiple programming languages
+        "analysis": {
 
             "language": language,
 

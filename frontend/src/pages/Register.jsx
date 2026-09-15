@@ -16,6 +16,7 @@ import {
 
 import "../styles/Register.css";
 
+
 function Register() {
 
     const [username, setUsername] = useState("");
@@ -28,28 +29,55 @@ function Register() {
 
     const navigate = useNavigate();
 
+
+    // ==========================
+    // Register Handler
+    // ==========================
+
     const handleRegister = async (e) => {
 
         e.preventDefault();
 
         setError("");
 
+
+        // ==========================================
+        // FRONTEND VALIDATION
+        // ==========================================
+
         if (!username || !email || !password) {
+
             setError("Please fill in all fields.");
+
             return;
         }
 
-        if (password.length < 6) {
-            setError("Password must be at least 6 characters.");
+
+        // ==========================================
+        // PASSWORD VALIDATION
+        // ==========================================
+
+        if (password.length < 8) {
+
+            setError(
+                "Password must be at least 8 characters."
+            );
+
             return;
         }
+
 
         try {
 
             setLoading(true);
 
+
+            // ==========================================
+            // REGISTER API
+            // ==========================================
+
             const response = await axios.post(
-                "https://code-reviewer-ai-1-22gz.onrender.com/register",
+                "http://127.0.0.1:5000/register",
                 {
                     username,
                     email,
@@ -57,9 +85,15 @@ function Register() {
                 }
             );
 
+
+            // ==========================================
+            // SUCCESS
+            // ==========================================
+
             alert(response.data.message);
 
             navigate("/login");
+
 
         } catch (error) {
 
@@ -70,6 +104,7 @@ function Register() {
                 "Registration failed. Please try again."
             );
 
+
         } finally {
 
             setLoading(false);
@@ -77,13 +112,18 @@ function Register() {
         }
     };
 
+
     return (
 
         <div className="register-page">
 
-            {/* Background effects */}
+
+            {/* ================================
+                BACKGROUND EFFECTS
+            ================================= */}
 
             <div className="register-glow register-glow-one"></div>
+
             <div className="register-glow register-glow-two"></div>
 
 
@@ -95,6 +135,7 @@ function Register() {
                 ================================= */}
 
                 <section className="register-hero">
+
 
                     {/* Brand */}
 
@@ -113,6 +154,9 @@ function Register() {
 
                     <div className="register-hero-content">
 
+
+                        {/* Badge */}
+
                         <div className="register-badge">
 
                             <span className="register-status-dot"></span>
@@ -122,11 +166,15 @@ function Register() {
                         </div>
 
 
+                        {/* Heading */}
+
                         <h1>
 
                             Build.
                             <span> Review.</span>
+
                             <br />
+
                             Improve.
 
                         </h1>
@@ -144,6 +192,7 @@ function Register() {
                         {/* Benefits */}
 
                         <div className="register-benefits">
+
 
                             <div className="register-benefit">
 
@@ -210,10 +259,11 @@ function Register() {
 
                             </div>
 
+
                         </div>
 
 
-                        {/* Developer quote */}
+                        {/* Developer Message */}
 
                         <div className="developer-message">
 
@@ -233,8 +283,11 @@ function Register() {
 
                         </div>
 
+
                     </div>
 
+
+                    {/* Footer */}
 
                     <div className="register-footer">
 
@@ -256,6 +309,7 @@ function Register() {
 
                     </div>
 
+
                 </section>
 
 
@@ -268,7 +322,7 @@ function Register() {
                     <div className="register-card">
 
 
-                        {/* Mobile brand */}
+                        {/* Mobile Brand */}
 
                         <div className="mobile-register-brand">
 
@@ -302,6 +356,10 @@ function Register() {
 
                         </div>
 
+
+                        {/* =================================
+                            REGISTER FORM
+                        ================================= */}
 
                         <form onSubmit={handleRegister}>
 
@@ -369,7 +427,7 @@ function Register() {
                                     </label>
 
                                     <span>
-                                        Minimum 6 characters
+                                        Minimum 8 characters
                                     </span>
 
                                 </div>
@@ -428,7 +486,7 @@ function Register() {
                             )}
 
 
-                            {/* Register button */}
+                            {/* Register Button */}
 
                             <button
                                 type="submit"
@@ -440,6 +498,7 @@ function Register() {
 
                                     <>
                                         <span className="register-spinner"></span>
+
                                         Creating Account...
                                     </>
 
@@ -447,6 +506,7 @@ function Register() {
 
                                     <>
                                         Create Account
+
                                         <FiArrowRight />
                                     </>
 
@@ -468,10 +528,11 @@ function Register() {
 
                             </div>
 
+
                         </form>
 
 
-                        {/* Login link */}
+                        {/* Login Link */}
 
                         <div className="register-login-link">
 
@@ -485,14 +546,17 @@ function Register() {
 
                         </div>
 
+
                     </div>
 
                 </section>
+
 
             </div>
 
         </div>
     );
 }
+
 
 export default Register;
