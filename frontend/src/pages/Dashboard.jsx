@@ -116,7 +116,7 @@ function Dashboard() {
             try {
 
                 const response = await axios.get(
-                    "http://127.0.0.1:5000/profile",
+                    `${import.meta.env.VITE_API_URL}/profile`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`
