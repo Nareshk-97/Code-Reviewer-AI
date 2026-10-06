@@ -3,7 +3,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { reviewCode } from "../services/reviewService";
-import {getHistory,saveHistory,deleteHistory,clearHistory} from "../services/historyService";
+import {
+    getHistory,
+    saveHistory,
+    deleteHistory,
+    clearHistory
+} from "../services/historyService";
+
 import "../styles/Dashboard.css";
 
 import EditorPanel from "../components/EditorPanel";
@@ -12,8 +18,13 @@ import Navbar from "../components/Navbar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import {
+    Prism as SyntaxHighlighter
+} from "react-syntax-highlighter";
+
+import {
+    oneDark
+} from "react-syntax-highlighter/dist/esm/styles/prism";
 
 
 function Dashboard() {
@@ -81,56 +92,6 @@ function Dashboard() {
     // ==========================
 
     const navigate = useNavigate();
-
-
-    // ==========================
-    // Detect Language from Gemini
-    // ==========================
-
-    const detectLanguageFromReview = (reviewText) => {
-
-        const match = reviewText.match(
-            /# Programming Language\s*\n+(.+)/i
-        );
-
-        if (!match) {
-            return language;
-        }
-
-
-        const detected = match[1]
-            .trim()
-            .toLowerCase();
-
-
-        if (detected.includes("javascript")) {
-            return "javascript";
-        }
-
-
-        if (
-            detected.includes("c++") ||
-            detected.includes("cpp")
-        ) {
-            return "cpp";
-        }
-
-
-        if (
-            detected.includes("java") &&
-            !detected.includes("javascript")
-        ) {
-            return "java";
-        }
-
-
-        if (detected.includes("python")) {
-            return "python";
-        }
-
-
-        return language;
-    };
 
 
     // ==========================
@@ -281,6 +242,9 @@ function Dashboard() {
     }, []);
 
 
+    // ==========================
+    // AI Review
+    // ==========================
 
     // ==========================
 // AI Review
@@ -305,48 +269,57 @@ const handleReview = async () => {
         // Send Code to Backend
         // ==========================
 
-        const response = await reviewCode(code);
+        const response =
+            await reviewCode(code);
 
 
         if (response.success) {
 
-            const aiReview = response.review;
+            const aiReview =
+                response.review;
 
 
             // ==========================
             // Get Backend Score
             // ==========================
 
-            const reviewScore = response.score;
+            const reviewScore =
+                response.score;
 
 
             // ==========================
-            // Detect Language
+            // Get Backend Detected Language
             // ==========================
 
             const detectedLanguage =
-                detectLanguageFromReview(aiReview);
+                response.analysis.language.toLowerCase();
 
 
             // ==========================
             // Update Language
             // ==========================
 
-            setLanguage(detectedLanguage);
+            setLanguage(
+                detectedLanguage
+            );
 
 
             // ==========================
             // Display Review
             // ==========================
 
-            setReview(aiReview);
+            setReview(
+                aiReview
+            );
 
 
             // ==========================
             // Display Score
             // ==========================
 
-            setScore(reviewScore);
+            setScore(
+                reviewScore
+            );
 
 
             // ==========================
@@ -378,32 +351,42 @@ const handleReview = async () => {
 
             const newReview = {
 
-                id: historyResponse.history_id,
+                id:
+                    historyResponse.history_id,
 
-                language: detectedLanguage,
+                language:
+                    detectedLanguage,
 
-                code: code,
+                code:
+                    code,
 
-                review: aiReview,
+                review:
+                    aiReview,
 
-                score: reviewScore,
+                score:
+                    reviewScore,
 
-                createdAt: new Date().toLocaleString()
+                createdAt:
+                    new Date().toLocaleString()
 
             };
 
 
-            setHistory((previousHistory) => [
+            setHistory(
+                (previousHistory) => [
 
-                newReview,
+                    newReview,
 
-                ...previousHistory
+                    ...previousHistory
 
-            ]);
+                ]
+            );
 
         } else {
 
-            alert(response.message);
+            alert(
+                response.message
+            );
 
         }
 
@@ -428,11 +411,6 @@ const handleReview = async () => {
     }
 
 };
-
-
-    
-
-
     // ==========================
     // Logout
     // ==========================
@@ -610,7 +588,6 @@ const handleReview = async () => {
 
             setReview("");
 
-
             // Clear score too
 
             setScore(null);
@@ -621,134 +598,139 @@ const handleReview = async () => {
 
 
     // ==========================
-// Delete History
-// ==========================
+    // Delete History
+    // ==========================
 
-const handleDeleteHistory = async (id) => {
+    const handleDeleteHistory = async (id) => {
 
-    if (
-        !window.confirm(
-            "Delete this review?"
-        )
-    ) {
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await deleteHistory(id);
+        if (
+            !window.confirm(
+                "Delete this review?"
+            )
+        ) {
+            return;
+        }
 
 
-        if (response.success) {
+        try {
 
-            setHistory((previousHistory) =>
-                previousHistory.filter(
-                    item => item.id !== id
-                )
-            );
+            const response =
+                await deleteHistory(id);
 
 
-            // If deleted review is currently displayed,
-            // clear the review and score.
+            if (response.success) {
 
-            const deletedItem =
-                history.find(
-                    item => item.id === id
+                setHistory((previousHistory) =>
+                    previousHistory.filter(
+                        item => item.id !== id
+                    )
                 );
 
 
-            if (deletedItem) {
+                // If deleted review is currently displayed,
+                // clear the review and score.
 
-                setReview((currentReview) =>
-                    currentReview === deletedItem.review
-                        ? ""
-                        : currentReview
-                );
+                const deletedItem =
+                    history.find(
+                        item => item.id === id
+                    );
 
 
-                setScore((currentScore) =>
-                    currentScore === deletedItem.score
-                        ? null
-                        : currentScore
+                if (deletedItem) {
+
+                    setReview((currentReview) =>
+                        currentReview === deletedItem.review
+                            ? ""
+                            : currentReview
+                    );
+
+
+                    setScore((currentScore) =>
+                        currentScore === deletedItem.score
+                            ? null
+                            : currentScore
+                    );
+
+                }
+
+            } else {
+
+                alert(
+                    response.message ||
+                    "Failed to delete review."
                 );
 
             }
 
-        } else {
+        } catch (error) {
+
+            console.error(
+                "Delete History Error:",
+                error
+            );
+
 
             alert(
-                response.message ||
-                "Failed to delete review."
+                "Unable to delete review."
             );
 
         }
 
-    } catch (error) {
-
-        console.error(
-            "Delete History Error:",
-            error
-        );
-
-
-        alert(
-            "Unable to delete review."
-        );
-
-    }
-
-};
+    };
 
 
     // ==========================
-// Clear All History
-// ==========================
+    // Clear All History
+    // ==========================
 
-const handleClearHistory = async () => {
+    const handleClearHistory = async () => {
 
-    if (
-        !window.confirm(
-            "Are you sure you want to delete all review history?"
-        )
-    ) {
-        return;
-    }
+        if (
+            !window.confirm(
+                "Are you sure you want to delete all review history?"
+            )
+        ) {
+            return;
+        }
 
-    try {
 
-        const response = await clearHistory();
+        try {
 
-        if (response.success) {
+            const response = await clearHistory();
 
-            setHistory([]);
 
-            setReview("");
+            if (response.success) {
 
-            setScore(null);
+                setHistory([]);
 
-        } else {
+                setReview("");
+
+                setScore(null);
+
+            } else {
+
+                alert(
+                    response.message ||
+                    "Failed to clear history."
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Clear History Error:",
+                error
+            );
+
 
             alert(
-                response.message ||
-                "Failed to clear history."
+                "Unable to clear review history."
             );
 
         }
 
-    } catch (error) {
-
-        console.error(
-            "Clear History Error:",
-            error
-        );
-
-        alert(
-            "Unable to clear review history."
-        );
-    }
-};
+    };
 
 
     return (
@@ -1387,17 +1369,19 @@ const handleClearHistory = async () => {
 
                                     onClick={() => {
 
+                                        // ==========================
+                                        // RESTORE HISTORY
+                                        // ==========================
+
+                                        setCode(item.code);
+
                                         setReview(
                                             item.review
                                         );
 
-
-                                        // Restore score
-
                                         setScore(
                                             item.score || null
                                         );
-
 
                                         setLanguage(
                                             item.language
@@ -1496,73 +1480,78 @@ const handleClearHistory = async () => {
                 <div className="toolbar-left">
 
                     <select
-    value={language}
-    onChange={(e) =>
-        setLanguage(e.target.value)
-    }
->
 
-    <option value="python">
-        Python
-    </option>
+                        value={language}
 
-    <option value="java">
-        Java
-    </option>
+                        onChange={(e) =>
+                            setLanguage(
+                                e.target.value
+                            )
+                        }
 
-    <option value="javascript">
-        JavaScript
-    </option>
+                    >
 
-    <option value="typescript">
-        TypeScript
-    </option>
+                        <option value="python">
+                            Python
+                        </option>
 
-    <option value="c">
-        C
-    </option>
+                        <option value="java">
+                            Java
+                        </option>
 
-    <option value="cpp">
-        C++
-    </option>
+                        <option value="javascript">
+                            JavaScript
+                        </option>
 
-    <option value="csharp">
-        C#
-    </option>
+                        <option value="typescript">
+                            TypeScript
+                        </option>
 
-    <option value="go">
-        Go
-    </option>
+                        <option value="c">
+                            C
+                        </option>
 
-    <option value="rust">
-        Rust
-    </option>
+                        <option value="cpp">
+                            C++
+                        </option>
 
-    <option value="php">
-        PHP
-    </option>
+                        <option value="csharp">
+                            C#
+                        </option>
 
-    <option value="kotlin">
-        Kotlin
-    </option>
+                        <option value="go">
+                            Go
+                        </option>
 
-    <option value="swift">
-        Swift
-    </option>
+                        <option value="rust">
+                            Rust
+                        </option>
 
-    <option value="html">
-        HTML
-    </option>
+                        <option value="php">
+                            PHP
+                        </option>
 
-    <option value="css">
-        CSS
-    </option>
+                        <option value="kotlin">
+                            Kotlin
+                        </option>
 
-    <option value="sql">
-        SQL
-    </option>
+                        <option value="swift">
+                            Swift
+                        </option>
 
-</select>
+                        <option value="html">
+                            HTML
+                        </option>
+
+                        <option value="css">
+                            CSS
+                        </option>
+
+                        <option value="sql">
+                            SQL
+                        </option>
+
+                    </select>
 
                 </div>
 
