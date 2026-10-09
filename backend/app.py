@@ -64,7 +64,7 @@ def home():
 
     return {
         "status": "success",
-        "message": "Code Reviewer AI Backend is Running 🚀"
+        "message": "Code Reviewer AI Backend is Running"
     }
 
 
@@ -135,11 +135,7 @@ app.register_blueprint(review)
 app.register_blueprint(history)
 
 
-# ==========================================
-# DEBUG ROUTES
-# ==========================================
 
-print(app.url_map)
 
 
 # ==========================================

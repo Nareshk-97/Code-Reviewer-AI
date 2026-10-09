@@ -318,7 +318,8 @@ IMPORTANT RULES
                 syntax_analysis,
                 code_analysis,
                 security_analysis,
-                complexity_analysis
+                complexity_analysis,
+                score
             )
 
             ai_available = False

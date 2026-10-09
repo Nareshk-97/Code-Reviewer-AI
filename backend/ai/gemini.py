@@ -1,20 +1,18 @@
 from google import genai
+from google.genai import types
 
 from config import GEMINI_API_KEY
 
 
-# ==========================================
-# GEMINI CLIENT
-# ==========================================
+TIMEOUT_MS = 10_000
 
 client = genai.Client(
-    api_key=GEMINI_API_KEY
+    api_key=GEMINI_API_KEY,
+    http_options=types.HttpOptions(
+        timeout=TIMEOUT_MS
+    )
 )
 
-
-# ==========================================
-# GEMINI MODEL FALLBACKS
-# ==========================================
 
 MODELS = [
     "gemini-3.6-flash",
@@ -23,22 +21,18 @@ MODELS = [
 ]
 
 
-# ==========================================
-# CUSTOM GEMINI ERROR
-# ==========================================
-
 class GeminiReviewError(Exception):
-    """
-    Custom exception for Gemini review failures.
-    """
+    """Custom exception for Gemini review failures."""
     pass
 
 
-# ==========================================
-# ASK GEMINI
-# ==========================================
-
 def ask_gemini(prompt):
+    """
+    Generate a code review using Gemini.
+
+    Each model has a 10-second request timeout.
+    If one model fails or times out, the next model is tried.
+    """
 
     if not prompt or not prompt.strip():
         raise GeminiReviewError(
@@ -52,33 +46,21 @@ def ask_gemini(prompt):
 
     last_error = None
 
-    # Try each Gemini model
     for model in MODELS:
 
-        print(
-            f"🤖 Trying Gemini model: {model}"
-        )
+        print(f"Trying Gemini model: {model}")
 
         try:
-
             response = client.models.generate_content(
                 model=model,
                 contents=prompt
             )
 
-            # Check response
             if response and response.text:
-
-                print(
-                    f"✅ Gemini success: {model}"
-                )
-
+                print(f"Gemini success: {model}")
                 return response.text
 
-            # Empty response
-            print(
-                f"⚠️ {model} returned an empty response."
-            )
+            print(f"{model} returned an empty response.")
 
             last_error = GeminiReviewError(
                 f"{model} returned an empty response."
@@ -88,21 +70,10 @@ def ask_gemini(prompt):
 
             last_error = err
 
-            print(
-                f"❌ {model} failed: {err}"
-            )
+            print(f"Gemini model failed: {err}")
+            print("Switching to next Gemini model...")
 
-            print(
-                "⚡ Switching to next Gemini model..."
-            )
-
-    # ==========================================
-    # ALL MODELS FAILED
-    # ==========================================
-
-    print(
-        "❌ All Gemini models failed."
-    )
+    print("All Gemini models failed.")
 
     raise GeminiReviewError(
         "Gemini AI service is currently unavailable."

@@ -1,8 +1,15 @@
 import mysql.connector
-from config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
+
+from config import (
+    DB_HOST,
+    DB_USER,
+    DB_PASSWORD,
+    DB_NAME
+)
 
 
 def get_db_connection():
+
     try:
 
         connection = mysql.connector.connect(
@@ -12,12 +19,14 @@ def get_db_connection():
             database=DB_NAME
         )
 
-        print("✅ Connected to MySQL Database")
+        print("Connected to MySQL Database")
 
         return connection
 
     except Exception as err:
 
-        print(f"❌ Database Connection Error: {err}")
+        print(
+            f"Database Connection Error: {err}"
+        )
 
         return None

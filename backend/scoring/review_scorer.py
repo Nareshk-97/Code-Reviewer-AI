@@ -59,10 +59,10 @@ def calculate_review_score(
     elif time_complexity == "O(n)":
         complexity_score = 9
 
-    elif time_complexity == "O(n²)":
+    elif time_complexity == "O(n^2)":
         complexity_score = 7
 
-    elif time_complexity == "O(n³)":
+    elif time_complexity == "O(n^3)":
         complexity_score = 5
 
     else:
@@ -155,16 +155,10 @@ def calculate_review_score(
     # ==========================================
 
     return {
-
         "overall_score": overall_score,
-
         "syntax_score": syntax_score,
-
         "security_score": security_score,
-
         "complexity_score": complexity_score,
-
         "structure_score": structure_score,
-
         "maintainability_score": maintainability_score
     }

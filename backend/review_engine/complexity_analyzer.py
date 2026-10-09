@@ -24,9 +24,9 @@ def analyze_complexity(code):
         stripped = line.lstrip()
 
         if re.match(
-    r"(for|foreach|while)\b",
-    stripped
-):
+            r"(for|foreach|while)\b",
+            stripped
+        ):
 
             indentation = (
                 len(line) - len(stripped)
@@ -70,11 +70,11 @@ def analyze_complexity(code):
 
     if nested_loops >= 2:
 
-        time_complexity = "O(n³)"
+        time_complexity = "O(n^3)"
 
     elif nested_loops == 1:
 
-        time_complexity = "O(n²)"
+        time_complexity = "O(n^2)"
 
     elif loop_count > 0:
 
@@ -161,7 +161,6 @@ def analyze_complexity(code):
 
             # C/C++ style array with size
             r"\b\w+\s+\w+\s*\[\s*\d+\s*\]\s*="
-
         ]
 
         for pattern in array_patterns:
@@ -190,7 +189,6 @@ def analyze_complexity(code):
 
             r"\bunordered_map\s*<",
             r"\bstd::unordered_map\s*<"
-
         ]
 
         for pattern in cpp_patterns:
@@ -217,7 +215,6 @@ def analyze_complexity(code):
             r"\bLinkedList\s*<",
             r"\bHashMap\s*<",
             r"\bHashSet\s*<"
-
         ]
 
         for pattern in java_patterns:
@@ -243,7 +240,6 @@ def analyze_complexity(code):
 
             # Array(...)
             r"\bArray\s*\("
-
         ]
 
         for pattern in javascript_patterns:
@@ -252,7 +248,8 @@ def analyze_complexity(code):
 
                 creates_collection = True
                 break
-        # ------------------------------------------
+
+    # ------------------------------------------
     # Go slices
     # ------------------------------------------
 
@@ -268,7 +265,6 @@ def analyze_complexity(code):
 
             # var numbers []int
             r"\bvar\s+\w+\s+\[\]\w+"
-
         ]
 
         for pattern in go_patterns:
@@ -278,7 +274,7 @@ def analyze_complexity(code):
                 creates_collection = True
                 break
 
-        # ------------------------------------------
+    # ------------------------------------------
     # Rust collections
     # ------------------------------------------
 
@@ -294,7 +290,6 @@ def analyze_complexity(code):
 
             # Vec<T>
             r"\bVec\s*<"
-
         ]
 
         for pattern in rust_patterns:
@@ -304,7 +299,7 @@ def analyze_complexity(code):
                 creates_collection = True
                 break
 
-        # ------------------------------------------
+    # ------------------------------------------
     # PHP arrays
     # ------------------------------------------
 
@@ -317,7 +312,6 @@ def analyze_complexity(code):
 
             # array(...)
             r"\barray\s*\("
-
         ]
 
         for pattern in php_patterns:
@@ -326,15 +320,13 @@ def analyze_complexity(code):
 
                 creates_collection = True
                 break
-    
-    
-    
 
     # ------------------------------------------
     # Python range() is O(1) space
     # ------------------------------------------
     #
     # IMPORTANT:
+    #
     # range(n) does NOT mean O(n) space.
     #
     # Example:
@@ -369,5 +361,4 @@ def analyze_complexity(code):
         "loops": loop_count,
 
         "nested_loops": nested_loops
-
     }

@@ -4,10 +4,12 @@ def generate_fallback_review(
     syntax,
     statistics,
     security,
-    complexity
+    complexity,
+    score
 ):
     """
     Generate a local code review when Gemini is unavailable.
+    Uses the centralized backend score from review_scorer.py.
     """
 
     # ==========================================
@@ -102,21 +104,12 @@ def generate_fallback_review(
     # RATING
     # ==========================================
 
-    rating = 10
-
-    if not syntax.get("valid"):
-        rating -= 3
-
-    if security.get("risk_count", 0) > 0:
-        rating -= min(
-            security["risk_count"],
-            3
-        )
-
-    if statistics.get("comments", 0) == 0:
-        rating -= 1
-
-    rating = max(1, rating)
+    # Use the centralized score calculated by
+    # scoring/review_scorer.py.
+    rating = score.get(
+        "overall_score",
+        0
+    )
 
     # ==========================================
     # SUMMARY
@@ -195,8 +188,8 @@ Therefore, exact runtime output cannot be guaranteed.
 
 **{rating}/10**
 
-This rating is based on locally detected syntax,
-security, code structure, and complexity information.
+This rating is calculated by the centralized
+Python review scoring engine.
 
 > Gemini AI was unavailable, so this review was generated
 > by the local Python review engine.
